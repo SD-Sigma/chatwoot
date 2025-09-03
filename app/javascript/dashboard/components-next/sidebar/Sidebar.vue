@@ -537,7 +537,7 @@ const menuItems = computed(() => {
           @show-create-account-modal="emit('showCreateAccountModal')"
         />
       </div>
-      <div class="flex gap-2 px-2">
+      <div class="flex gap-2 px-2" v-if="userRole === 'administrator'">
         <RouterLink
           :to="{ name: 'search' }"
           class="flex items-center w-full gap-2 px-2 py-1 rounded-lg h-7 outline outline-1 outline-n-weak bg-n-solid-3 dark:bg-n-black/30"
