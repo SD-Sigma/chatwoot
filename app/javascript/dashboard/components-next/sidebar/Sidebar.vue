@@ -119,9 +119,17 @@ const newReportRoutes = () => [
 
 const reportRoutes = computed(() => newReportRoutes());
 
+
+const currentUser = useMapGetter('getCurrentUser');
+const userRole = computed(() => currentUser.value?.role);
+
 const menuItems = computed(() => {
-  return [
-    {
+
+
+   const items = [];
+
+  if (userRole.value === 'administrator') {
+    items.push({
       name: 'Inbox',
       label: t('SIDEBAR.INBOX'),
       icon: 'i-lucide-inbox',
@@ -130,7 +138,10 @@ const menuItems = computed(() => {
       getterKeys: {
         badge: 'notifications/getHasUnreadNotifications',
       },
-    },
+    });
+  }
+
+   items.push(
     {
       name: 'Conversation',
       label: t('SIDEBAR.CONVERSATIONS'),
@@ -495,8 +506,9 @@ const menuItems = computed(() => {
           to: accountScopedRoute('billing_settings_index'),
         },
       ],
-    },
-  ];
+    })
+    return items;
+
 });
 </script>
 
