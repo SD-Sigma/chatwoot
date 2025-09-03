@@ -36,18 +36,61 @@ class AccountUser < ApplicationRecord
 
   accepts_nested_attributes_for :account
 
-  after_create_commit :notify_creation, :create_notification_setting
+  after_create_commit :notify_creation, :create_notification_setting,:set_default_ui_settings
   after_destroy :notify_deletion, :remove_user_from_account
   after_save :update_presence_in_redis, if: :saved_change_to_availability?
 
   validates :user_id, uniqueness: { scope: :account_id }
 
+ #Sigma 
+
   def create_notification_setting
     setting = user.notification_settings.new(account_id: account.id)
-    setting.selected_email_flags = [:email_conversation_assignment]
-    setting.selected_push_flags = [:push_conversation_assignment]
+
+    setting.selected_email_flags = [
+    #  :email_conversation_assignment,
+    #  :email_conversation_creation,
+    #  :email_conversation_mention,
+    #  :email_assigned_conversation_new_message,
+    #  :email_participating_conversation_new_message
+    ]
+
+    setting.selected_push_flags = [
+      :push_conversation_assignment,
+    #  :push_conversation_creation,
+      :push_conversation_mention,
+      :push_assigned_conversation_new_message,
+      :push_participating_conversation_new_message
+    ]
+
+    # Otros flags disponibles (comentados):
+    # :email_conversation_feedback
+    # :email_conversation_status_change
+    # :push_conversation_feedback
+    # :push_conversation_status_change
+
     setting.save!
   end
+
+  def set_default_ui_settings
+    self.ui_settings ||= {}
+    self.ui_settings[account.id] ||= {
+      audio_alerts: {
+        assigned_conversation: true,
+        unassigned_conversation: true,
+        assigned_to_others: true,
+        all_conversations: true
+      },
+      conditions: {
+        window_inactive: true,
+        repeat_every_30s: true
+      },
+      is_contact_sidebar_open: true
+    }
+    save!
+  end
+
+
 
   def remove_user_from_account
     ::Agents::DestroyJob.perform_later(account, user)
