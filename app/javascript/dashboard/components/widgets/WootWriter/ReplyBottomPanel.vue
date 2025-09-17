@@ -160,7 +160,18 @@ export default {
       accountId: 'getCurrentAccountId',
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
       uiFlags: 'integrations/getUIFlags',
+      currentUser: 'getCurrentUser', // 👈 aquí obtienes el user logueado
+      currentChat: 'getSelectedChat', // 👈 aquí traemos la conversación
     }),
+    isAdmin() {
+    return this.currentUser?.role === 'administrator';
+    },
+    canShowSendButton() {
+      if (this.currentChat?.status !== 'resolved') {
+        return true;
+      }
+      return this.isAdmin;
+    },
     isNote() {
       return this.mode === REPLY_EDITOR_MODES.NOTE;
     },
@@ -272,6 +283,7 @@ export default {
         @click="toggleEmojiPicker"
       />
       <FileUpload
+        v-if="isAdmin && showAttachButton"
         ref="uploadRef"
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_ATTACH_ICON')"
         input-id="conversationAttachment"
@@ -287,7 +299,6 @@ export default {
         @input-file="onFileUpload"
       >
         <NextButton
-          v-if="showAttachButton"
           v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_ATTACH_ICON')"
           icon="i-ph-paperclip"
           slate
@@ -295,8 +306,9 @@ export default {
           sm
         />
       </FileUpload>
+
       <NextButton
-        v-if="showAudioRecorderButton"
+        v-if="isAdmin && showAudioRecorderButton"
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_AUDIORECORDER_ICON')"
         :icon="!isRecordingAudio ? 'i-ph-microphone' : 'i-ph-microphone-slash'"
         slate
@@ -304,6 +316,7 @@ export default {
         sm
         @click="toggleAudioRecorder"
       />
+
       <NextButton
         v-if="showEditorToggle"
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_FORMAT_ICON')"
@@ -375,6 +388,7 @@ export default {
     </div>
     <div class="right-wrap">
       <NextButton
+        v-if="canShowSendButton"
         :label="sendButtonText"
         type="submit"
         sm

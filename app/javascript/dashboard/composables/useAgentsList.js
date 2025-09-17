@@ -57,9 +57,15 @@ export function useAgentsList(includeNoneAgent = true) {
       agentsByUpdatedPresence
     );
 
+    // 🔥 Filtramos solo los agentes online
+    const onlyOnlineAgents = filteredAgentsByAvailability.filter(
+      agent => agent.availability_status === 'online'
+    );
+
+
     return [
       ...(includeNoneAgent && isAgentSelected.value ? [createNoneAgent()] : []),
-      ...filteredAgentsByAvailability,
+      ...onlyOnlineAgents,
     ];
   });
 

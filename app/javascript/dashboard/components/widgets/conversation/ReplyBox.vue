@@ -128,6 +128,26 @@ export default {
       lastEmail: 'getLastEmailInSelectedChat',
       globalConfig: 'globalConfig/get',
     }),
+        /**
+     * Condición para mostrar el reply editor:
+     * 1. Usuario administrador
+     * 2. O agente asignado a la conversación y que la conversación NO esté resuelta
+     */
+    canShowReplyEditor() {
+      return (
+        this.currentUser?.role === 'administrator' ||
+        (
+          this.currentUser?.id === this.currentChat?.meta?.assignee?.id &&
+          this.currentChat?.status !== 'resolved'
+        )
+      );
+    },
+    replyBoxClass() {
+      return {
+        'is-private': this.isPrivate,
+        'is-focused': this.isFocused || this.hasAttachments,
+      };
+    },
     currentContact() {
       return this.$store.getters['contacts/getContact'](
         this.currentChat.meta.sender.id
@@ -1105,7 +1125,7 @@ export default {
     :action-button-label="$t('CONVERSATION.ASSIGN_TO_ME')"
     @primary-action="onClickSelfAssign"
   />
-  <div ref="replyEditor" class="reply-box" :class="replyBoxClass">
+  <div ref="replyEditor"  v-if="canShowReplyEditor" class="reply-box" :class="replyBoxClass">
     <ReplyTopPanel
       :mode="replyType"
       :is-message-length-reaching-threshold="isMessageLengthReachingThreshold"

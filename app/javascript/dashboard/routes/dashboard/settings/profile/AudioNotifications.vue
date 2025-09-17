@@ -19,8 +19,9 @@ const { uiSettings, updateUISettings } = useUISettings();
 
 const { t } = useI18n();
 const audioAlert = ref('');
-const playAudioWhenTabIsInactive = ref(false);
-const alertIfUnreadConversationExist = ref(false);
+
+const playAudioWhenTabIsInactive = ref(true);
+const alertIfUnreadConversationExist = ref(true);
 const alertTone = ref('ding');
 const audioAlertConditions = ref([]);
 const i18nKeyPrefix = 'PROFILE_SETTINGS.FORM.AUDIO_NOTIFICATIONS_SECTION';
@@ -91,6 +92,8 @@ const handleAudioToneChange = value => {
 
 <template>
   <div id="profile-settings-notifications" class="flex flex-col gap-6">
+
+    
     <AudioAlertTone
       :value="alertTone"
       :label="$t(`${i18nKeyPrefix}.DEFAULT_TONE.TITLE`)"

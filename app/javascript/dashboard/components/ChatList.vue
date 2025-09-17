@@ -198,11 +198,18 @@ const userPermissions = computed(() => {
 });
 
 const assigneeTabItems = computed(() => {
-  return filterItemsByPermission(
+  let items = filterItemsByPermission(
     ASSIGNEE_TYPE_TAB_PERMISSIONS,
     userPermissions.value,
     item => item.permissions
-  ).map(({ key, count: countKey }) => ({
+  );
+
+  // si no es administrador, filtramos las pestañas "all" y "unassigned"
+  if (currentUser.value?.role !== 'administrator') {
+    items = items.filter(({ key }) => !['all', 'unassigned'].includes(key));
+  }
+
+  return items.map(({ key, count: countKey }) => ({
     key,
     name: t(`CHAT_LIST.ASSIGNEE_TYPE_TABS.${key}`),
     count: conversationStats.value[countKey] || 0,

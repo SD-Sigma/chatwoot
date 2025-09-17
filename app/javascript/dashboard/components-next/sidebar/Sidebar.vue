@@ -124,10 +124,9 @@ const currentUser = useMapGetter('getCurrentUser');
 const userRole = computed(() => currentUser.value?.role);
 
 const menuItems = computed(() => {
+  const items = [];
 
-
-   const items = [];
-
+  // 👉 Solo visible para administradores: opción Inbox
   if (userRole.value === 'administrator') {
     items.push({
       name: 'Inbox',
@@ -141,173 +140,191 @@ const menuItems = computed(() => {
     });
   }
 
-   items.push(
-    {
-      name: 'Conversation',
-      label: t('SIDEBAR.CONVERSATIONS'),
-      icon: 'i-lucide-message-circle',
-      children: [
-        {
-          name: 'All',
-          label: t('SIDEBAR.ALL_CONVERSATIONS'),
-          activeOn: ['inbox_conversation'],
-          to: accountScopedRoute('home'),
-        },
-        {
-          name: 'Mentions',
-          label: t('SIDEBAR.MENTIONED_CONVERSATIONS'),
-          activeOn: ['conversation_through_mentions'],
-          to: accountScopedRoute('conversation_mentions'),
-        },
-        {
-          name: 'Unattended',
-          activeOn: ['conversation_through_unattended'],
-          label: t('SIDEBAR.UNATTENDED_CONVERSATIONS'),
-          to: accountScopedRoute('conversation_unattended'),
-        },
-        {
-          name: 'Folders',
-          label: t('SIDEBAR.CUSTOM_VIEWS_FOLDER'),
-          icon: 'i-lucide-folder',
-          activeOn: ['conversations_through_folders'],
-          children: conversationCustomViews.value.map(view => ({
-            name: `${view.name}-${view.id}`,
-            label: view.name,
-            to: accountScopedRoute('folder_conversations', { id: view.id }),
-          })),
-        },
-        {
-          name: 'Teams',
-          label: t('SIDEBAR.TEAMS'),
-          icon: 'i-lucide-users',
-          activeOn: ['conversations_through_team'],
-          children: teams.value.map(team => ({
-            name: `${team.name}-${team.id}`,
-            label: team.name,
-            to: accountScopedRoute('team_conversations', { teamId: team.id }),
-          })),
-        },
-        {
-          name: 'Channels',
-          label: t('SIDEBAR.CHANNELS'),
-          icon: 'i-lucide-mailbox',
-          activeOn: ['conversation_through_inbox'],
-          children: sortedInboxes.value.map(inbox => ({
-            name: `${inbox.name}-${inbox.id}`,
-            label: inbox.name,
-            to: accountScopedRoute('inbox_dashboard', { inbox_id: inbox.id }),
-            component: leafProps =>
-              h(ChannelLeaf, {
-                label: leafProps.label,
-                active: leafProps.active,
-                inbox,
-              }),
-          })),
-        },
-        {
-          name: 'Labels',
-          label: t('SIDEBAR.LABELS'),
-          icon: 'i-lucide-tag',
-          activeOn: ['conversations_through_label'],
-          children: labels.value.map(label => ({
-            name: `${label.title}-${label.id}`,
+  // 👉 Menú principal de Conversaciones (con varios submenús dinámicos)
+  items.push({
+    name: 'Conversation',
+    label: t('SIDEBAR.CONVERSATIONS'),
+    icon: 'i-lucide-message-circle',
+    children: [
+      // Submenú: Todas las conversaciones
+      {
+        name: 'All',
+        label: t('SIDEBAR.ALL_CONVERSATIONS'),
+        activeOn: ['inbox_conversation'],
+        to: accountScopedRoute('home'),
+      },
+      // Submenú: Conversaciones en las que mencionaron al usuario
+      {
+        name: 'Mentions',
+        label: t('SIDEBAR.MENTIONED_CONVERSATIONS'),
+        activeOn: ['conversation_through_mentions'],
+        to: accountScopedRoute('conversation_mentions'),
+      },
+      // Submenú: Conversaciones sin atender
+      {
+        name: 'Unattended',
+        activeOn: ['conversation_through_unattended'],
+        label: t('SIDEBAR.UNATTENDED_CONVERSATIONS'),
+        to: accountScopedRoute('conversation_unattended'),
+      },
+      // Submenú dinámico: Carpetas personalizadas
+      {
+        name: 'Folders',
+        label: t('SIDEBAR.CUSTOM_VIEWS_FOLDER'),
+        icon: 'i-lucide-folder',
+        activeOn: ['conversations_through_folders'],
+        children: conversationCustomViews.value.map(view => ({
+          name: `${view.name}-${view.id}`,
+          label: view.name,
+          to: accountScopedRoute('folder_conversations', { id: view.id }),
+        })),
+      },
+      // Submenú dinámico: Conversaciones por equipos
+      {
+        name: 'Teams',
+        label: t('SIDEBAR.TEAMS'),
+        icon: 'i-lucide-users',
+        activeOn: ['conversations_through_team'],
+        children: teams.value.map(team => ({
+          name: `${team.name}-${team.id}`,
+          label: team.name,
+          to: accountScopedRoute('team_conversations', { teamId: team.id }),
+        })),
+      },
+      // Submenú dinámico: Conversaciones por canal
+      {
+        name: 'Channels',
+        label: t('SIDEBAR.CHANNELS'),
+        icon: 'i-lucide-mailbox',
+        activeOn: ['conversation_through_inbox'],
+        children: sortedInboxes.value.map(inbox => ({
+          name: `${inbox.name}-${inbox.id}`,
+          label: inbox.name,
+          to: accountScopedRoute('inbox_dashboard', { inbox_id: inbox.id }),
+          component: leafProps =>
+            h(ChannelLeaf, {
+              label: leafProps.label,
+              active: leafProps.active,
+              inbox,
+            }),
+        })),
+      },
+      // Submenú dinámico: Conversaciones filtradas por etiquetas
+      {
+        name: 'Labels',
+        label: t('SIDEBAR.LABELS'),
+        icon: 'i-lucide-tag',
+        activeOn: ['conversations_through_label'],
+        children: labels.value.map(label => ({
+          name: `${label.title}-${label.id}`,
+          label: label.title,
+          icon: h('span', {
+            class: `size-[12px] ring-1 ring-n-alpha-1 dark:ring-white/20 ring-inset rounded-sm`,
+            style: { backgroundColor: label.color },
+          }),
+          to: accountScopedRoute('label_conversations', {
             label: label.title,
-            icon: h('span', {
-              class: `size-[12px] ring-1 ring-n-alpha-1 dark:ring-white/20 ring-inset rounded-sm`,
-              style: { backgroundColor: label.color },
-            }),
-            to: accountScopedRoute('label_conversations', {
-              label: label.title,
-            }),
-          })),
-        },
-      ],
-    },
-    {
-      name: 'Captain',
-      icon: 'i-woot-captain',
-      label: t('SIDEBAR.CAPTAIN'),
-      children: [
-        {
-          name: 'Assistants',
-          label: t('SIDEBAR.CAPTAIN_ASSISTANTS'),
-          to: accountScopedRoute('captain_assistants_index'),
-        },
-        {
-          name: 'Documents',
-          label: t('SIDEBAR.CAPTAIN_DOCUMENTS'),
-          to: accountScopedRoute('captain_documents_index'),
-        },
-        {
-          name: 'Responses',
-          label: t('SIDEBAR.CAPTAIN_RESPONSES'),
-          to: accountScopedRoute('captain_responses_index'),
-        },
-      ],
-    },
-    {
-      name: 'Contacts',
-      label: t('SIDEBAR.CONTACTS'),
-      icon: 'i-lucide-contact',
-      children: [
-        {
-          name: 'All Contacts',
-          label: t('SIDEBAR.ALL_CONTACTS'),
-          to: accountScopedRoute(
-            'contacts_dashboard_index',
-            {},
-            { page: 1, search: undefined }
-          ),
-          activeOn: ['contacts_dashboard_index', 'contacts_edit'],
-        },
-        {
-          name: 'Active',
-          label: t('SIDEBAR.ACTIVE'),
-          to: accountScopedRoute('contacts_dashboard_active'),
-          activeOn: ['contacts_dashboard_active'],
-        },
-        {
-          name: 'Segments',
-          icon: 'i-lucide-group',
-          label: t('SIDEBAR.CUSTOM_VIEWS_SEGMENTS'),
-          children: contactCustomViews.value.map(view => ({
-            name: `${view.name}-${view.id}`,
-            label: view.name,
+          }),
+        })),
+      },
+    ],
+  });
+
+  // 👉 Solo visible para administradores: Captain y Contactos
+  if (userRole.value === 'administrator') {
+    items.push(
+      // Sección Captain (IA / Asistentes / Documentos / Respuestas)
+      {
+        name: 'Captain',
+        icon: 'i-woot-captain',
+        label: t('SIDEBAR.CAPTAIN'),
+        children: [
+          {
+            name: 'Assistants',
+            label: t('SIDEBAR.CAPTAIN_ASSISTANTS'),
+            to: accountScopedRoute('captain_assistants_index'),
+          },
+          {
+            name: 'Documents',
+            label: t('SIDEBAR.CAPTAIN_DOCUMENTS'),
+            to: accountScopedRoute('captain_documents_index'),
+          },
+          {
+            name: 'Responses',
+            label: t('SIDEBAR.CAPTAIN_RESPONSES'),
+            to: accountScopedRoute('captain_responses_index'),
+          },
+        ],
+      },
+      // Sección Contactos (con vistas, segmentos y etiquetas dinámicas)
+      {
+        name: 'Contacts',
+        label: t('SIDEBAR.CONTACTS'),
+        icon: 'i-lucide-contact',
+        children: [
+          {
+            name: 'All Contacts',
+            label: t('SIDEBAR.ALL_CONTACTS'),
             to: accountScopedRoute(
-              'contacts_dashboard_segments_index',
-              { segmentId: view.id },
-              { page: 1 }
-            ),
-            activeOn: [
-              'contacts_dashboard_segments_index',
-              'contacts_edit_segment',
-            ],
-          })),
-        },
-        {
-          name: 'Tagged With',
-          icon: 'i-lucide-tag',
-          label: t('SIDEBAR.TAGGED_WITH'),
-          children: labels.value.map(label => ({
-            name: `${label.title}-${label.id}`,
-            label: label.title,
-            icon: h('span', {
-              class: `size-[12px] ring-1 ring-n-alpha-1 dark:ring-white/20 ring-inset rounded-sm`,
-              style: { backgroundColor: label.color },
-            }),
-            to: accountScopedRoute(
-              'contacts_dashboard_labels_index',
-              { label: label.title },
+              'contacts_dashboard_index',
+              {},
               { page: 1, search: undefined }
             ),
-            activeOn: [
-              'contacts_dashboard_labels_index',
-              'contacts_edit_label',
-            ],
-          })),
-        },
-      ],
-    },
+            activeOn: ['contacts_dashboard_index', 'contacts_edit'],
+          },
+          {
+            name: 'Active',
+            label: t('SIDEBAR.ACTIVE'),
+            to: accountScopedRoute('contacts_dashboard_active'),
+            activeOn: ['contacts_dashboard_active'],
+          },
+          {
+            name: 'Segments',
+            icon: 'i-lucide-group',
+            label: t('SIDEBAR.CUSTOM_VIEWS_SEGMENTS'),
+            children: contactCustomViews.value.map(view => ({
+              name: `${view.name}-${view.id}`,
+              label: view.name,
+              to: accountScopedRoute(
+                'contacts_dashboard_segments_index',
+                { segmentId: view.id },
+                { page: 1 }
+              ),
+              activeOn: [
+                'contacts_dashboard_segments_index',
+                'contacts_edit_segment',
+              ],
+            })),
+          },
+          {
+            name: 'Tagged With',
+            icon: 'i-lucide-tag',
+            label: t('SIDEBAR.TAGGED_WITH'),
+            children: labels.value.map(label => ({
+              name: `${label.title}-${label.id}`,
+              label: label.title,
+              icon: h('span', {
+                class: `size-[12px] ring-1 ring-n-alpha-1 dark:ring-white/20 ring-inset rounded-sm`,
+                style: { backgroundColor: label.color },
+              }),
+              to: accountScopedRoute(
+                'contacts_dashboard_labels_index',
+                { label: label.title },
+                { page: 1, search: undefined }
+              ),
+              activeOn: [
+                'contacts_dashboard_labels_index',
+                'contacts_edit_label',
+              ],
+            })),
+          },
+        ],
+      }
+    );
+  }
+
+  // 👉 Reportes (incluye CSAT, SLA, Bot y rutas dinámicas)
+  items.push(
     {
       name: 'Reports',
       label: t('SIDEBAR.REPORTS'),
@@ -323,7 +340,7 @@ const menuItems = computed(() => {
           label: t('SIDEBAR.REPORTS_CONVERSATION'),
           to: accountScopedRoute('conversation_reports'),
         },
-        ...reportRoutes.value,
+        ...reportRoutes.value, // Submenús dinámicos de reportes extra
         {
           name: 'Reports CSAT',
           label: t('SIDEBAR.CSAT'),
@@ -341,6 +358,7 @@ const menuItems = computed(() => {
         },
       ],
     },
+    // 👉 Campañas (Live Chat, SMS, WhatsApp)
     {
       name: 'Campaigns',
       label: t('SIDEBAR.CAMPAIGNS'),
@@ -363,6 +381,7 @@ const menuItems = computed(() => {
         },
       ],
     },
+    // 👉 Portales de ayuda (Artículos, Categorías, Locales, Configuración)
     {
       name: 'Portals',
       label: t('SIDEBAR.HELP_CENTER.TITLE'),
@@ -410,6 +429,7 @@ const menuItems = computed(() => {
         },
       ],
     },
+    // 👉 Configuración de la cuenta (con submenús variados)
     {
       name: 'Settings',
       label: t('SIDEBAR.SETTINGS'),
@@ -506,13 +526,16 @@ const menuItems = computed(() => {
           to: accountScopedRoute('billing_settings_index'),
         },
       ],
-    })
-    return items;
+    }
+  );
 
+  return items;
 });
+
 </script>
 
 <template>
+  <H1>tEST</H1>
   <aside
     v-on-click-outside="[
       closeMobileSidebar,

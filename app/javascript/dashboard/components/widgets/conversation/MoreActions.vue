@@ -1,4 +1,5 @@
 <script setup>
+//SIGMA SOLTUIONS DEVELOPERS
 import { computed, onUnmounted } from 'vue';
 import { useToggle } from '@vueuse/core';
 import { useStore } from 'vuex';
@@ -9,6 +10,8 @@ import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
 import ButtonV4 from 'dashboard/components-next/button/Button.vue';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
+import { useMapGetter } from 'dashboard/composables/store';
+
 
 import {
   CMD_MUTE_CONVERSATION,
@@ -17,6 +20,10 @@ import {
 } from 'dashboard/helper/commandbar/events';
 
 // No props needed as we're getting currentChat from the store directly
+
+const currentUser = useMapGetter('getCurrentUser');
+const userRole = computed(() => currentUser.value?.role);
+
 const store = useStore();
 const { t } = useI18n();
 
@@ -28,21 +35,25 @@ const currentChat = computed(() => store.getters.getSelectedChat);
 const actionMenuItems = computed(() => {
   const items = [];
 
-  if (!currentChat.value.muted) {
-    items.push({
-      icon: 'i-lucide-volume-off',
-      label: t('CONTACT_PANEL.MUTE_CONTACT'),
-      action: 'mute',
-      value: 'mute',
-    });
-  } else {
-    items.push({
-      icon: 'i-lucide-volume-1',
-      label: t('CONTACT_PANEL.UNMUTE_CONTACT'),
-      action: 'unmute',
-      value: 'unmute',
-    });
+  if(userRole == "administrator"){
+    if (!currentChat.value.muted) {
+      items.push({
+        icon: 'i-lucide-volume-off',
+        label: t('CONTACT_PANEL.MUTE_CONTACT'),
+        action: 'mute',
+        value: 'mute',
+      });
+    } else {
+      items.push({
+        icon: 'i-lucide-volume-1',
+        label: t('CONTACT_PANEL.UNMUTE_CONTACT'),
+        action: 'unmute',
+        value: 'unmute',
+      });
+    }
   }
+  
+
 
   items.push({
     icon: 'i-lucide-share',
@@ -88,11 +99,27 @@ onUnmounted(() => {
   emitter.off(CMD_UNMUTE_CONVERSATION, unmute);
   emitter.off(CMD_SEND_TRANSCRIPT, toggleEmailModal);
 });
+
+
+/**
+ * Verifica si el botón de ResolveAction debe mostrarse
+ * - Si el usuario es administrador
+ * - O si el usuario logueado es el mismo asignado en la conversación actual
+ */
+const canShowResolveButton = () => {
+  return (
+    userRole.value === 'administrator' ||
+    currentUser.value?.id === currentChat.value?.meta?.assignee?.id && currentChat.value?.status !== 'resolved'
+  );
+};
+
+
 </script>
 
 <template>
   <div class="relative flex items-center gap-2 actions--container">
     <ResolveAction
+      v-if="canShowResolveButton()"
       :conversation-id="currentChat.id"
       :status="currentChat.status"
     />
