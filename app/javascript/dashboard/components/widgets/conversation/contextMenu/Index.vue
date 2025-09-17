@@ -192,7 +192,8 @@ export default {
       const filteredAgents = getSortedAgentsByAvailability(
         agentsByUpdatedPresence
       );
-      return filteredAgents;
+       //Cambio sigma
+       return filteredAgents.filter(agent => agent.availability_status === 'online');
     },
     assignableAgents() {
       return [
@@ -368,7 +369,7 @@ export default {
       </MenuItemWithSubmenu>
       <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" />
     </template>
-    <template v-if="isAllowed([MENU.OPEN_NEW_TAB, MENU.COPY_LINK])">
+    <!--<template v-if="isAllowed([MENU.OPEN_NEW_TAB, MENU.COPY_LINK])">
       <MenuItem
         v-if="isAllowed([MENU.OPEN_NEW_TAB])"
         :option="openInNewTabOption"
@@ -382,6 +383,7 @@ export default {
         @click.stop="copyConversationLink"
       />
     </template>
+    -->
     <template v-if="isAdmin && isAllowed([MENU.DELETE])">
       <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" />
       <MenuItem
