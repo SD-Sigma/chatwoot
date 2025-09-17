@@ -279,7 +279,7 @@ export default {
   <div
     class="p-1 rounded-md shadow-xl bg-n-alpha-3/50 backdrop-blur-[100px] outline-1 outline outline-n-weak/50"
   >
-    <template v-if="isAllowed([MENU.MARK_AS_READ, MENU.MARK_AS_UNREAD])">
+    <template v-if="isAdmin && isAllowed([MENU.MARK_AS_READ, MENU.MARK_AS_UNREAD])">
       <MenuItem
         v-if="!hasUnreadMessages"
         :option="unreadOption"
@@ -294,7 +294,7 @@ export default {
       />
       <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" />
     </template>
-    <template v-if="isAllowed([MENU.STATUS, MENU.SNOOZE])">
+    <template v-if="isAdmin && isAllowed([MENU.STATUS, MENU.SNOOZE])">
       <template v-for="option in statusMenuConfig">
         <MenuItem
           v-if="show(option.key) && isAllowed([MENU.STATUS])"
@@ -340,7 +340,7 @@ export default {
         />
       </MenuItemWithSubmenu>
       <MenuItemWithSubmenu
-        v-if="isAllowed([MENU.AGENT])"
+        v-if="isAdmin && isAllowed([MENU.AGENT])"
         :option="agentMenuConfig"
         :sub-menu-available="!!assignableAgents.length"
       >
@@ -356,7 +356,7 @@ export default {
         </template>
       </MenuItemWithSubmenu>
       <MenuItemWithSubmenu
-        v-if="isAllowed([MENU.TEAM])"
+        v-if="isAdmin && isAllowed([MENU.TEAM])"
         :option="teamMenuConfig"
         :sub-menu-available="!!teams.length"
       >

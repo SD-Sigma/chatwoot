@@ -1,6 +1,6 @@
 <script setup>
-//SIGMA SOLTUIONS DEVELOPERS
-import { computed, onUnmounted } from 'vue';
+// SIGMA SOLUTIONS DEVELOPERS
+import { computed, onUnmounted, watchEffect } from 'vue';
 import { useToggle } from '@vueuse/core';
 import { useStore } from 'vuex';
 import { useAlert } from 'dashboard/composables';
@@ -11,7 +11,7 @@ import ResolveAction from '../../buttons/ResolveAction.vue';
 import ButtonV4 from 'dashboard/components-next/button/Button.vue';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
 import { useMapGetter } from 'dashboard/composables/store';
-
+import { useRouter } from 'vue-router'; // 👈 IMPORTANTE
 
 import {
   CMD_MUTE_CONVERSATION,
@@ -19,23 +19,23 @@ import {
   CMD_UNMUTE_CONVERSATION,
 } from 'dashboard/helper/commandbar/events';
 
-// No props needed as we're getting currentChat from the store directly
+// --- Setup ---
+const router = useRouter();
+const store = useStore();
+const { t } = useI18n();
 
 const currentUser = useMapGetter('getCurrentUser');
 const userRole = computed(() => currentUser.value?.role);
-
-const store = useStore();
-const { t } = useI18n();
+const currentChat = computed(() => store.getters.getSelectedChat);
 
 const [showEmailActionsModal, toggleEmailModal] = useToggle(false);
 const [showActionsDropdown, toggleDropdown] = useToggle(false);
 
-const currentChat = computed(() => store.getters.getSelectedChat);
-
+// --- Action Menu Items ---
 const actionMenuItems = computed(() => {
   const items = [];
 
-  if(userRole == "administrator"){
+  if (userRole.value === 'administrator') {
     if (!currentChat.value.muted) {
       items.push({
         icon: 'i-lucide-volume-off',
@@ -52,8 +52,6 @@ const actionMenuItems = computed(() => {
       });
     }
   }
-  
-
 
   items.push({
     icon: 'i-lucide-share',
@@ -79,7 +77,7 @@ const handleActionClick = ({ action }) => {
   }
 };
 
-// These functions are needed for the event listeners
+// --- Mute/Unmute Event Listeners ---
 const mute = () => {
   store.dispatch('muteConversation', currentChat.value.id);
   useAlert(t('CONTACT_PANEL.MUTED_SUCCESS'));
@@ -100,29 +98,33 @@ onUnmounted(() => {
   emitter.off(CMD_SEND_TRANSCRIPT, toggleEmailModal);
 });
 
-
-/**
- * Verifica si el botón de ResolveAction debe mostrarse
- * - Si el usuario es administrador
- * - O si el usuario logueado es el mismo asignado en la conversación actual
- */
-const canShowResolveButton = () => {
+// --- Computed: Mostrar Resolve Button ---
+const canShowResolveButton = computed(() => {
   return (
     userRole.value === 'administrator' ||
-    currentUser.value?.id === currentChat.value?.meta?.assignee?.id && currentChat.value?.status !== 'resolved'
+    (
+      currentUser.value?.id === currentChat.value?.meta?.assignee?.id &&
+      currentChat.value?.status !== 'resolved'
+    )
   );
-};
+});
 
-
+// --- Redirigir si NO puede ver el botón ---
+watchEffect(() => {
+  if (!canShowResolveButton.value && currentChat.value) {
+    router.push(`/app/accounts/${currentChat.value.account_id}/dashboard`);
+  }
+});
 </script>
 
 <template>
   <div class="relative flex items-center gap-2 actions--container">
     <ResolveAction
-      v-if="canShowResolveButton()"
+      v-if="canShowResolveButton"
       :conversation-id="currentChat.id"
       :status="currentChat.status"
     />
+
     <div
       v-on-clickaway="() => toggleDropdown(false)"
       class="relative flex items-center group"
@@ -143,6 +145,7 @@ const canShowResolveButton = () => {
         @action="handleActionClick"
       />
     </div>
+
     <EmailTranscriptModal
       v-if="showEmailActionsModal"
       :show="showEmailActionsModal"
