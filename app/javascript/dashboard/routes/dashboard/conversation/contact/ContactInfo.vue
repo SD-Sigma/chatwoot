@@ -11,7 +11,7 @@ import ContactMergeModal from 'dashboard/modules/contact/ContactMergeModal.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import NextButton from 'dashboard/components-next/button/Button.vue';
-import VoiceCallButton from 'dashboard/components-next/Contacts/VoiceCallButton.vue';
+// import VoiceCallButton from 'dashboard/components-next/Contacts/VoiceCallButton.vue';
 
 import {
   isAConversationRoute,
@@ -29,7 +29,7 @@ export default {
     ComposeConversation,
     SocialIcons,
     ContactMergeModal,
-    VoiceCallButton,
+    // VoiceCallButton,
   },
   props: {
     contact: {
@@ -271,6 +271,7 @@ export default {
         >
           <template #trigger="{ toggle }">
             <NextButton
+              v-if="isAdmin"
               v-tooltip.top-end="$t('CONTACT_PANEL.NEW_MESSAGE')"
               icon="i-ph-chat-circle-dots"
               slate
@@ -280,6 +281,7 @@ export default {
             />
           </template>
         </ComposeConversation>
+        <!--
         <VoiceCallButton
           :phone="contact.phone_number"
           icon="i-ri-phone-fill"
@@ -288,7 +290,9 @@ export default {
           slate
           faded
         />
+        -->
         <NextButton
+          v-if="isAdmin"
           v-tooltip.top-end="$t('EDIT_CONTACT.BUTTON_LABEL')"
           icon="i-ph-pencil-simple"
           slate
@@ -297,6 +301,7 @@ export default {
           @click="toggleEditModal"
         />
         <NextButton
+          v-if="isAdmin"
           v-tooltip.top-end="$t('CONTACT_PANEL.MERGE_CONTACT')"
           icon="i-ph-arrows-merge"
           slate
