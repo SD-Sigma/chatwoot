@@ -6,7 +6,6 @@ import { useI18n } from 'vue-i18n';
 import { useStore, useStoreGetters } from 'dashboard/composables/store';
 import { useEmitter } from 'dashboard/composables/emitter';
 import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents';
-
 import WootDropdownItem from 'shared/components/ui/dropdown/DropdownItem.vue';
 import WootDropdownMenu from 'shared/components/ui/dropdown/DropdownMenu.vue';
 import wootConstants from 'dashboard/constants/globals';
@@ -14,9 +13,12 @@ import {
   CMD_REOPEN_CONVERSATION,
   CMD_RESOLVE_CONVERSATION,
 } from 'dashboard/helper/commandbar/events';
-
 import Button from 'dashboard/components-next/button/Button.vue';
+import notificationAudio from 'dashboard/helper/AudioNotificationHelper';
 
+import { useRouter } from 'vue-router'; //👉 Aqui
+
+const router = useRouter();
 const store = useStore();
 const getters = useStoreGetters();
 const { t } = useI18n();
@@ -95,8 +97,13 @@ const onCmdOpenConversation = () => {
   toggleStatus(wootConstants.STATUS_TYPE.OPEN);
 };
 
-const onCmdResolveConversation = () => {
-  toggleStatus(wootConstants.STATUS_TYPE.RESOLVED);
+const onCmdResolveConversation = async () => {
+  await toggleStatus(wootConstants.STATUS_TYPE.RESOLVED);
+  useAlert("✅ Conversación resuelta correctamente");
+  notificationAudio.play();
+  router.push(`/app/accounts/1/dashboard`);
+
+  
 };
 
 const keyboardEvents = {

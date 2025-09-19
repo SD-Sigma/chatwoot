@@ -11,7 +11,7 @@ import ResolveAction from '../../buttons/ResolveAction.vue';
 import ButtonV4 from 'dashboard/components-next/button/Button.vue';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
 import { useMapGetter } from 'dashboard/composables/store';
-import { useRouter } from 'vue-router'; // 👈 IMPORTANTE
+import { useRouter } from 'vue-router'; 
 
 import {
   CMD_MUTE_CONVERSATION,
@@ -112,9 +112,10 @@ const canShowResolveButton = computed(() => {
 // --- Redirigir si NO puede ver el botón ---
 watchEffect(() => {
   if (!canShowResolveButton.value && currentChat.value) {
-    router.push(`/app/accounts/${currentChat.value.account_id}/dashboard`);
+    router.push(`/app/accounts/1/dashboard`);
   }
 });
+
 </script>
 
 <template>
