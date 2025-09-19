@@ -271,6 +271,7 @@ export default {
         >
           <template #trigger="{ toggle }">
             <NextButton
+              v-if="isAdmin"
               v-tooltip.top-end="$t('CONTACT_PANEL.NEW_MESSAGE')"
               icon="i-ph-chat-circle-dots"
               slate
@@ -289,6 +290,7 @@ export default {
           faded
         />
         <NextButton
+          v-if="isAdmin"
           v-tooltip.top-end="$t('EDIT_CONTACT.BUTTON_LABEL')"
           icon="i-ph-pencil-simple"
           slate
@@ -297,6 +299,7 @@ export default {
           @click="toggleEditModal"
         />
         <NextButton
+          v-if="isAdmin"
           v-tooltip.top-end="$t('CONTACT_PANEL.MERGE_CONTACT')"
           icon="i-ph-arrows-merge"
           slate
