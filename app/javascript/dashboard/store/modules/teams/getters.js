@@ -8,6 +8,14 @@ export const getters = {
       {}
     );
   },
+  getTeamsWithOnlineAgents: ($state, $getters, rootState, rootGetters) => {
+    const teams = Object.values($state.records);
+
+    return teams.filter(team => {
+      const agents = rootGetters['teamMembers/getTeamMembers'](team.id);
+      return agents.some(agent => agent.availability_status === 'online');
+    });
+  },
   getMyTeams($state, $getters) {
     return $getters.getTeams.filter(team => {
       const { is_member: isMember } = team;
