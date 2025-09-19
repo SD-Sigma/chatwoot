@@ -14,7 +14,6 @@ import {
   CMD_RESOLVE_CONVERSATION,
 } from 'dashboard/helper/commandbar/events';
 import Button from 'dashboard/components-next/button/Button.vue';
-import notificationAudio from 'dashboard/helper/AudioNotificationHelper';
 
 import { useRouter } from 'vue-router'; //👉 Aqui
 
@@ -100,7 +99,6 @@ const onCmdOpenConversation = () => {
 const onCmdResolveConversation = async () => {
   await toggleStatus(wootConstants.STATUS_TYPE.RESOLVED);
   useAlert("✅ Conversación resuelta correctamente");
-  notificationAudio.play();
   router.push(`/app/accounts/1/dashboard`);
 
   
