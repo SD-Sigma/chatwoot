@@ -65,18 +65,35 @@ export default {
     ...mapGetters({
       currentChat: 'getSelectedChat',
       currentUser: 'getCurrentUser',
-      teams: 'teams/getTeams',
+      teams: 'teams/getTeamsWithOnlineAgents',
     }),
     hasAnAssignedTeam() {
       return !!this.currentChat?.meta?.team;
     },
     teamsList() {
+
+
+      //Buscar todos los teams
+      //Recorrer cada teams para buscar sus agents
+      // armar un array con los teams que tengan agents online
+
+
       if (this.hasAnAssignedTeam) {
         return [
           { id: 0, name: this.$t('TEAMS_SETTINGS.LIST.NONE') },
           ...this.teams,
         ];
       }
+
+
+
+      //LLAMAR A LOS APIS 
+
+
+
+
+      
+      console.log("Equipos:",this.teams);
       return this.teams;
     },
     assignedAgent: {
