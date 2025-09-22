@@ -10,6 +10,7 @@ import { CONVERSATION_PRIORITY } from '../../../../shared/constants/messages';
 import { CONVERSATION_EVENTS } from '../../../helper/AnalyticsHelper/events';
 import { useTrack } from 'dashboard/composables';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import TeamsAPI from 'dashboard/api/teams';
 
 export default {
   components: {
@@ -59,42 +60,26 @@ export default {
           thumbnail: `/assets/images/dashboard/priority/${CONVERSATION_PRIORITY.LOW}.svg`,
         },
       ],
+      availableTeams: [],   
     };
   },
   computed: {
     ...mapGetters({
       currentChat: 'getSelectedChat',
       currentUser: 'getCurrentUser',
-      teams: 'teams/getTeamsWithOnlineAgents',
+      teams: 'teams/getTeams',
     }),
     hasAnAssignedTeam() {
       return !!this.currentChat?.meta?.team;
     },
     teamsList() {
-
-
-      //Buscar todos los teams
-      //Recorrer cada teams para buscar sus agents
-      // armar un array con los teams que tengan agents online
-
-
       if (this.hasAnAssignedTeam) {
         return [
           { id: 0, name: this.$t('TEAMS_SETTINGS.LIST.NONE') },
-          ...this.teams,
+          ...this.availableTeams,
         ];
       }
-
-
-
-      //LLAMAR A LOS APIS 
-
-
-
-
-      
-      console.log("Equipos:",this.teams);
-      return this.teams;
+      return this.availableTeams;
     },
     assignedAgent: {
       get() {
@@ -172,7 +157,46 @@ export default {
       return false;
     },
   },
+    watch: {
+    // Cada vez que cambie la lista de teams en Vuex, refiltramos
+    teams: {
+      immediate: true,
+      handler(newTeams) {
+        if (newTeams?.length) {
+          this.fetchAvailableTeams(newTeams);
+        }
+      },
+    },
+  },
   methods: {
+    async fetchAvailableTeams(teams) {
+
+
+      try {
+        const results = await Promise.all(
+          teams.map(team =>
+            TeamsAPI.getAgents({ teamId: team.id })
+              .then(({ data }) => {
+                console.log(`Agentes del team ${team.name} ${team.id}:`);
+                console.log(data)
+                // ⚠️ revisa si tu API devuelve en `data` o en `data.payload`
+                const onlineAgents = data.filter(
+                  agent => agent.availability_status === 'online'
+                );
+                return onlineAgents.length > 0 ? team : null;
+              })
+              .catch(error => {
+                console.error(`Error al cargar agentes del team ${team.id}:`, error);
+                return null;
+              })
+          )
+        );
+
+        this.availableTeams = results.filter(Boolean);
+      } finally {
+       
+      }
+    },
     onSelfAssign() {
       const {
         account_id,
