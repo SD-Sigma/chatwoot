@@ -8,7 +8,10 @@ import { required, email } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { SESSION_STORAGE_KEYS } from 'dashboard/constants/sessionStorage';
 import SessionStorage from 'shared/helpers/sessionStorage';
-import { useBranding } from 'shared/composables/useBranding';
+//import { useBranding } from 'shared/composables/useBranding';
+
+
+
 
 // components
 import FormInput from '../../components/Form/Input.vue';
@@ -38,16 +41,14 @@ export default {
     authError: { type: String, default: '' },
   },
   setup() {
-    const { replaceInstallationName } = useBranding();
+    //const { replaceInstallationName } = useBranding();
     return {
-      replaceInstallationName,
-      v$: useVuelidate(),
+      //replaceInstallationName,
+      v$: useVuelidate()
     };
   },
   data() {
     return {
-      // We need to initialize the component with any
-      // properties that will be used in it
       credentials: {
         email: '',
         password: '',
@@ -63,13 +64,8 @@ export default {
   validations() {
     return {
       credentials: {
-        password: {
-          required,
-        },
-        email: {
-          required,
-          email,
-        },
+        password: { required },
+        email: { required, email },
       },
     };
   },
@@ -89,78 +85,66 @@ export default {
     if (this.authError) {
       const message = ERROR_MESSAGES[this.authError] ?? 'LOGIN.API.UNAUTH';
       useAlert(this.$t(message));
-      // wait for idle state
       this.requestIdleCallbackPolyfill(() => {
-        // Remove the error query param from the url
         const { query } = this.$route;
         this.$router.replace({ query: { ...query, error: undefined } });
       });
     }
   },
   methods: {
-    // TODO: Remove this when Safari gets wider support
-    // Ref: https://caniuse.com/requestidlecallback
-    //
     requestIdleCallbackPolyfill(callback) {
       if (window.requestIdleCallback) {
         window.requestIdleCallback(callback);
       } else {
-        // Fallback for safari
-        // Using a delay of 0 allows the callback to be executed asynchronously
-        // in the next available event loop iteration, similar to requestIdleCallback
         setTimeout(callback, 0);
       }
     },
     showAlertMessage(message) {
-      // Reset loading, current selected agent
       this.loginApi.showLoading = false;
       this.loginApi.message = message;
       useAlert(this.loginApi.message);
     },
     handleImpersonation() {
-      // Detects impersonation mode via URL and sets a session flag to prevent user settings changes during impersonation.
       const urlParams = new URLSearchParams(window.location.search);
       const impersonation = urlParams.get(IMPERSONATION_URL_SEARCH_KEY);
       if (impersonation) {
         SessionStorage.set(SESSION_STORAGE_KEYS.IMPERSONATION_USER, true);
       }
     },
-    submitLogin() {
+
+    async submitLogin() {
       this.loginApi.hasErrored = false;
       this.loginApi.showLoading = true;
 
       const credentials = {
-        email: this.email
-          ? decodeURIComponent(this.email)
-          : this.credentials.email,
+        email: this.email ? decodeURIComponent(this.email) : this.credentials.email,
         password: this.credentials.password,
         sso_auth_token: this.ssoAuthToken,
         ssoAccountId: this.ssoAccountId,
         ssoConversationId: this.ssoConversationId,
       };
 
-      login(credentials)
-        .then(() => {
-          this.handleImpersonation();
-          this.showAlertMessage(this.$t('LOGIN.API.SUCCESS_MESSAGE'));
-        })
-        .catch(response => {
-          // Reset URL Params if the authentication is invalid
-          if (this.email) {
-            window.location = '/app/login';
-          }
-          this.loginApi.hasErrored = true;
-          this.showAlertMessage(
-            response?.message || this.$t('LOGIN.API.UNAUTH')
-          );
-        });
+      try {
+        const user = await login(credentials);
+        console.log('[submitLogin] Login exitoso ✅',user);
+        this.handleImpersonation();
+        this.showAlertMessage(this.$t('LOGIN.API.SUCCESS_MESSAGE'));
+      } catch (response) {
+        console.error('[submitLogin] Error en login:', response);
+        if (this.email) {
+          window.location = '/app/login';
+        }
+        this.loginApi.hasErrored = true;
+        this.showAlertMessage(
+          response?.message || this.$t('LOGIN.API.UNAUTH')
+        );
+      }
     },
     submitFormLogin() {
       if (this.v$.credentials.email.$invalid && !this.email) {
         this.showAlertMessage(this.$t('LOGIN.EMAIL.ERROR'));
         return;
       }
-
       this.submitLogin();
     },
   },
@@ -169,10 +153,12 @@ export default {
 
 <template>
   <main
+  
     class="flex flex-col w-full min-h-screen py-20 bg-n-brand/5 dark:bg-n-background sm:px-6 lg:px-8"
   >
     <section class="max-w-5xl mx-auto">
-      <img
+    <!-- 
+    <img
         :src="globalConfig.logo"
         :alt="globalConfig.installationName"
         class="block w-auto h-8 mx-auto dark:hidden"
@@ -182,9 +168,14 @@ export default {
         :src="globalConfig.logoDark"
         :alt="globalConfig.installationName"
         class="hidden w-auto h-8 mx-auto dark:block"
-      />
+      />  
+    
+    -->
+
+
       <h2 class="mt-6 text-3xl font-medium text-center text-n-slate-12">
-        {{ replaceInstallationName($t('LOGIN.TITLE')) }}
+      <!--{{ replaceInstallationName($t('LOGIN.TITLE')) }} -->
+       <h1>SIGMA Solutions Developers</h1>
       </h2>
       <p v-if="showSignupLink" class="mt-3 text-sm text-center text-n-slate-11">
         {{ $t('COMMON.OR') }}

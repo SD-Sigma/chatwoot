@@ -15,11 +15,13 @@ export const login = async ({
     const response = await wootAPI.post('auth/sign_in', credentials);
     setAuthCredentials(response);
     clearLocalStorageOnLogout();
+    response.data.data.availability_status = 'online';
     window.location = getLoginRedirectURL({
       ssoAccountId,
       ssoConversationId,
       user: response.data.data,
     });
+    return response.data.data;
   } catch (error) {
     throwErrorMessage(error);
   }

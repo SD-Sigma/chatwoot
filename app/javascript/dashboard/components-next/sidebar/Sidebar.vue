@@ -80,6 +80,13 @@ onMounted(() => {
   store.dispatch('attributes/get');
   store.dispatch('customViews/get', 'conversation');
   store.dispatch('customViews/get', 'contact');
+
+  store.dispatch('updateAvailability', {
+    availability: 'online',
+    account_id: 1,
+  });
+
+
 });
 
 const sortedInboxes = computed(() =>

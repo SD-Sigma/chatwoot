@@ -10,6 +10,7 @@ import { CONVERSATION_EVENTS } from '../../../helper/AnalyticsHelper/events';
 import { useTrack } from 'dashboard/composables';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import TeamsAPI from 'dashboard/api/teams';
+import ConversationsAPI from 'dashboard/api/conversations';
 
 export default {
   components: {
@@ -173,13 +174,30 @@ export default {
       this.assignedAgent = selfAssign;
     },
 
-    onClickAssignAgent(selectedItem) {
-      if (this.assignedAgent && this.assignedAgent.id === selectedItem.id) {
-        console.log('Deseleccionando agente:', selectedItem);
-        this.assignedAgent = null;
-      } else {
-        console.log('Seleccionando agente:', selectedItem);
+    async onClickAssignAgent(selectedItem) {
+      // Solo continuar si hay un cambio de agente y el nuevo agente no es null
+      if (selectedItem && (!this.assignedAgent || this.assignedAgent.id !== selectedItem.id)) {
+        
+        const message = `
+    🔄 *Reasignación de conversación*
+    👤 ${this.assignedAgent?.id || 'N/A'} – *${this.assignedAgent?.name || 'Sin asignar'}* ➡️ ${selectedItem.id} – *${selectedItem.name}*
+        `;
+
+        console.log("Mensaje de reasignación:", message);
+
+        await ConversationsAPI.sendMessage(this.currentChat.id, message);
+        await ConversationsAPI.sendMessage(
+          this.currentChat.id,
+          "Estamos redirigiendo tu conversación con otro asesor disponible para continuar con tu atención.",
+          { isPrivate: false }
+        );
+
+        // Actualizar la asignación
         this.assignedAgent = selectedItem;
+
+      } else if (this.assignedAgent && selectedItem === null) {
+        // Si se está desasignando
+        this.assignedAgent = null;
       }
     },
 
