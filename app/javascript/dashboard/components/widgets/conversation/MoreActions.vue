@@ -35,23 +35,23 @@ const [showActionsDropdown, toggleDropdown] = useToggle(false);
 const actionMenuItems = computed(() => {
   const items = [];
 
-  if (userRole.value === 'administrator') {
-    if (!currentChat.value.muted) {
-      items.push({
-        icon: 'i-lucide-volume-off',
-        label: t('CONTACT_PANEL.MUTE_CONTACT'),
-        action: 'mute',
-        value: 'mute',
-      });
-    } else {
-      items.push({
-        icon: 'i-lucide-volume-1',
-        label: t('CONTACT_PANEL.UNMUTE_CONTACT'),
-        action: 'unmute',
-        value: 'unmute',
-      });
-    }
-  }
+  // if (userRole.value === 'administrator') {
+  //   if (!currentChat.value.muted) {
+  //     items.push({
+  //       icon: 'i-lucide-volume-off',
+  //       label: t('CONTACT_PANEL.MUTE_CONTACT'),
+  //       action: 'mute',
+  //       value: 'mute',
+  //     });
+  //   } else {
+  //     items.push({
+  //       icon: 'i-lucide-volume-1',
+  //       label: t('CONTACT_PANEL.UNMUTE_CONTACT'),
+  //       action: 'unmute',
+  //       value: 'unmute',
+  //     });
+  //   }
+  // }
 
   items.push({
     icon: 'i-lucide-share',
