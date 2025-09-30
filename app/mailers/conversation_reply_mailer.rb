@@ -50,12 +50,12 @@ class ConversationReplyMailer < ApplicationMailer
 
     @messages = @conversation.messages.chat.select(&:conversation_transcriptable?)
 
-    Rails.logger.info("Email sent from #{from_email_with_name} \
+    Rails.logger.info("Email sent from --- noreply@sdsigma.com \
       to #{to_email} with subject #{@conversation.display_id} \
       #{I18n.t('conversations.reply.transcript_subject')} ")
     mail({
            to: to_email,
-           from: from_email_with_name,
+           from: "noreply@sdsigma.com",
            subject: "[##{@conversation.display_id}] #{I18n.t('conversations.reply.transcript_subject')}"
          })
   end
