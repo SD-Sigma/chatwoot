@@ -210,6 +210,7 @@ export default {
               class="i-lucide-info text-sm text-n-slate-10"
             />
             <a
+              v-if="isAdmin"
               :href="contactProfileLink"
               target="_blank"
               rel="noopener nofollow noreferrer"
@@ -308,7 +309,7 @@ export default {
           :disabled="uiFlags.isMerging"
           @click="openMergeModal"
         />
-        <NextButton
+        <!-- NextButton
           v-if="isAdmin"
           v-tooltip.top-end="$t('DELETE_CONTACT.BUTTON_LABEL')"
           icon="i-ph-trash"
@@ -318,7 +319,7 @@ export default {
           ruby
           :disabled="uiFlags.isDeleting"
           @click="toggleDeleteModal"
-        />
+        /> -->
       </div>
       <EditContact
         v-if="showEditModal"
