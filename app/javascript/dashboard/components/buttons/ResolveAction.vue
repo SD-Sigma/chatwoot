@@ -168,7 +168,7 @@ useEmitter(CMD_RESOLVE_CONVERSATION, onCmdResolveConversation);
         :is-loading="isLoading"
         @click="onCmdOpenConversation"
       />
-      <Button
+      <!-- <Button
         v-if="showAdditionalActions"
         ref="arrowDownButtonRef"
         icon="i-lucide-chevron-down"
@@ -178,7 +178,7 @@ useEmitter(CMD_RESOLVE_CONVERSATION, onCmdResolveConversation);
         color="slate"
         trailing-icon
         @click="openDropdown"
-      />
+      /> -->
     </div>
     <div
       v-if="showActionsDropdown"
