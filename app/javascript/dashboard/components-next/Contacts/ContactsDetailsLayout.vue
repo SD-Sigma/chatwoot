@@ -88,7 +88,7 @@ const closeMobileSidebar = () => {
               @click="handleBreadcrumbClick"
             />
             <div class="flex items-center gap-2">
-              <Button
+              <!-- <Button
                 :label="
                   !isContactBlocked
                     ? $t('CONTACTS_LAYOUT.HEADER.BLOCK_CONTACT')
@@ -99,7 +99,7 @@ const closeMobileSidebar = () => {
                 :is-loading="isUpdating"
                 :disabled="isUpdating"
                 @click="toggleBlock"
-              />
+              /> -->
               <VoiceCallButton
                 :phone="selectedContact?.phoneNumber"
                 :label="$t('CONTACT_PANEL.CALL')"
