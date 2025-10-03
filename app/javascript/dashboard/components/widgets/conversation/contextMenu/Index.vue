@@ -102,11 +102,11 @@ export default {
           label: this.$t('CONVERSATION.CARD_CONTEXT_MENU.REOPEN'),
           icon: 'arrow-redo',
         },
-        {
-          key: wootConstants.STATUS_TYPE.PENDING,
-          label: this.$t('CONVERSATION.CARD_CONTEXT_MENU.PENDING'),
-          icon: 'book-clock',
-        },
+        // {
+        //   key: wootConstants.STATUS_TYPE.PENDING,
+        //   label: this.$t('CONVERSATION.CARD_CONTEXT_MENU.PENDING'),
+        //   icon: 'book-clock',
+        // },
       ],
       snoozeOption: {
         key: wootConstants.STATUS_TYPE.SNOOZED,
@@ -367,7 +367,7 @@ export default {
           @click.stop="$emit('assignTeam', team)"
         />
       </MenuItemWithSubmenu>
-      <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" />
+      <!-- <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" /> -->
     </template>
     <!--<template v-if="isAllowed([MENU.OPEN_NEW_TAB, MENU.COPY_LINK])">
       <MenuItem
@@ -384,13 +384,13 @@ export default {
       />
     </template>
     -->
-    <template v-if="isAdmin && isAllowed([MENU.DELETE])">
+    <!-- <template v-if="isAdmin && isAllowed([MENU.DELETE])">
       <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" />
       <MenuItem
         :option="deleteOption"
         variant="icon"
         @click.stop="deleteConversation"
       />
-    </template>
+    </template> -->
   </div>
 </template>
