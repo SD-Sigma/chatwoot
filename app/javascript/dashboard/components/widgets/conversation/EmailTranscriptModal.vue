@@ -59,6 +59,8 @@ export default {
     },
     selectedEmailAddress() {
       const { meta } = this.currentChat;
+      console.log("currentChat", this.currentChat);  
+      console.log("meta", meta);  
       switch (this.selectedType) {
         case 'contact':
           return meta.sender.email;
