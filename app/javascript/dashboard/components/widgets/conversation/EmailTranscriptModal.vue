@@ -66,7 +66,6 @@ export default {
         case 'contact':
           return meta.sender.email;
         case 'assignee':
-          console.log("email", email);
           const user = await AgentsApi.update(meta.assignee.id,{"auto_offline": false});
           return user.data.email
         case 'other_email_address':
