@@ -68,8 +68,7 @@ export default {
         case 'assignee':
           console.log("email", email);
           const user = await AgentsApi.update(meta.assignee.id,{"auto_offline": false});
-          console.log(user)
-          return user.email
+          return user.data.email
         case 'other_email_address':
           return this.email;
         default:
@@ -84,6 +83,7 @@ export default {
     async onSubmit() {
       this.isSubmitting = false;
       const email = await this.selectedEmailAddress
+      console.log("email a enviar transcript", email);
       try {
         await this.$store.dispatch('sendEmailTranscript', {
           email,
