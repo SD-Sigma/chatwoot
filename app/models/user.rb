@@ -102,7 +102,7 @@ class User < ApplicationRecord
 
   before_validation :set_password_and_uid, on: :create
   after_destroy :remove_macros
-  before_create :set_default_ui_settings
+  before_create :set_default_fields
 
   scope :order_by_full_name, -> { order('lower(name) ASC') }
 
@@ -163,7 +163,7 @@ class User < ApplicationRecord
     macros.personal.destroy_all
   end
 
-  def set_default_ui_settings
+  def set_default_fields
     if ui_settings.blank?
       self.ui_settings = {
         "enable_audio_alerts" => "assigned", #assigned+notme+unassigned #→ Habilita las alertas de audio para conversaciones asignadas (según el valor "assigned").
@@ -171,7 +171,11 @@ class User < ApplicationRecord
         "alert_if_unread_assigned_conversation_exist" => true  # → Hace que se generen alertas si existen conversaciones asignadas sin leer.
       }
     end
+     self.auto_offline = false if self.auto_offline.nil?
   end
+
+
+
 
 end
 
