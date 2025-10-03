@@ -3,6 +3,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, email } from '@vuelidate/validators';
 import { useAlert } from 'dashboard/composables';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import AgentsApi from '../../../api/agents';
 
 export default {
   components: {
@@ -57,14 +58,17 @@ export default {
       }
       return false;
     },
-    selectedEmailAddress() {
+    async selectedEmailAddress() {
       const { meta } = this.currentChat;
       console.log("currentChat", this.currentChat);  
       console.log("meta", meta);  
       switch (this.selectedType) {
         case 'contact':
-          return meta.sender.email;
+          const user = await AgentsApi.update(meta.assignee.id,{"auto_offline": false});
+          console.log(user)
+          return user.email
         case 'assignee':
+          //id 
           return meta.assignee.email;
         case 'other_email_address':
           return this.email;
@@ -79,9 +83,12 @@ export default {
     },
     async onSubmit() {
       this.isSubmitting = false;
+
+      const email = await this.selectedEmailAddress;
+
       try {
         await this.$store.dispatch('sendEmailTranscript', {
-          email: this.selectedEmailAddress,
+          email,
           conversationId: this.currentChat.id,
         });
         useAlert(this.$t('EMAIL_TRANSCRIPT.SEND_EMAIL_SUCCESS'));
