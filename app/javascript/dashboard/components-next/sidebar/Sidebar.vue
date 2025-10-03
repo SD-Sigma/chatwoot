@@ -81,11 +81,10 @@ onMounted(() => {
   store.dispatch('customViews/get', 'conversation');
   store.dispatch('customViews/get', 'contact');
 
-  
-  /*store.dispatch('updateAvailability', {
+  store.dispatch('updateAvailability', {
     availability: 'online',
     account_id: 1,
-  });*/
+  });
 
 
 });
