@@ -18,6 +18,9 @@ import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
 import Logo from 'next/icon/Logo.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
 
+import AgentsAPI from '../../api/agents';
+
+
 const props = defineProps({
   isMobileSidebarOpen: {
     type: Boolean,
@@ -72,7 +75,26 @@ const conversationCustomViews = useMapGetter(
   'customViews/getConversationCustomViews'
 );
 
-onMounted(() => {
+const currentUser = useMapGetter('getCurrentUser');
+const userRole = computed(() => currentUser.value?.role);
+
+onMounted(async () => {
+  try {
+    // Si el usuario ya está cargado en Vuex:
+    console.log("Usuario cargado en Vuex:", currentUser.value);
+    const user = currentUser.value;
+    if (!user) return;
+
+     await AgentsAPI.update(user.id, {
+      availability: 'online',
+      auto_offline: false,
+    });
+
+    console.log('✅ Agente actualizado a online');
+  } catch (error) {
+    console.error('❌ Error actualizando agente:', error);
+  }
+  
   store.dispatch('labels/get');
   store.dispatch('inboxes/get');
   store.dispatch('notifications/unReadCount');
@@ -81,11 +103,10 @@ onMounted(() => {
   store.dispatch('customViews/get', 'conversation');
   store.dispatch('customViews/get', 'contact');
 
-  store.dispatch('updateAvailability', {
+ /* store.dispatch('updateAvailability', {
     availability: 'online',
     account_id: 1,
-  });
-
+  });*/
 
 });
 
@@ -126,9 +147,6 @@ const newReportRoutes = () => [
 
 const reportRoutes = computed(() => newReportRoutes());
 
-
-const currentUser = useMapGetter('getCurrentUser');
-const userRole = computed(() => currentUser.value?.role);
 
 const menuItems = computed(() => {
   const items = [];
