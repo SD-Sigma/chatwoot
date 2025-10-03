@@ -64,12 +64,12 @@ export default {
       console.log("meta", meta);  
       switch (this.selectedType) {
         case 'contact':
+          return meta.sender.email;
+        case 'assignee':
+          console.log("email", email);
           const user = await AgentsApi.update(meta.assignee.id,{"auto_offline": false});
           console.log(user)
           return user.email
-        case 'assignee':
-          //id 
-          return meta.assignee.email;
         case 'other_email_address':
           return this.email;
         default:
@@ -83,9 +83,7 @@ export default {
     },
     async onSubmit() {
       this.isSubmitting = false;
-
-      const email = await this.selectedEmailAddress;
-
+      const email = await this.selectedEmailAddress
       try {
         await this.$store.dispatch('sendEmailTranscript', {
           email,
