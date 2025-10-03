@@ -8,9 +8,8 @@ import { required, email } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { SESSION_STORAGE_KEYS } from 'dashboard/constants/sessionStorage';
 import SessionStorage from 'shared/helpers/sessionStorage';
+import Agents from '../../../dashboard/api/agents';
 //import { useBranding } from 'shared/composables/useBranding';
-
-
 
 
 // components
@@ -127,6 +126,16 @@ export default {
       try {
         const user = await login(credentials);
         console.log('[submitLogin] Login exitoso ✅',user);
+
+        const updatedAgentResponse = await Agents.update(user.id, {
+          availability: 'online',
+          auto_offline: false,
+        });
+
+        const updatedAgent = updatedAgentResponse.data;
+
+        console.log('[Agent actualizado] ✅', updatedAgent);
+
         this.handleImpersonation();
         this.showAlertMessage(this.$t('LOGIN.API.SUCCESS_MESSAGE'));
       } catch (response) {
