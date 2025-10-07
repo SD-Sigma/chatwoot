@@ -124,7 +124,7 @@ export default {
               $t('EMAIL_TRANSCRIPT.FORM.SEND_TO_CONTACT')
             }}</label>
           </div>
-          <div v-if="currentChat.meta.assignee" class="flex items-center gap-2">
+          <!-- <div v-if="currentChat.meta.assignee" class="flex items-center gap-2">
             <input
               id="assignee"
               v-model="selectedType"
@@ -135,7 +135,7 @@ export default {
             <label for="assignee">{{
               $t('EMAIL_TRANSCRIPT.FORM.SEND_TO_AGENT')
             }}</label>
-          </div>
+          </div> -->
           <div class="flex items-center gap-2">
             <input
               id="other_email_address"
