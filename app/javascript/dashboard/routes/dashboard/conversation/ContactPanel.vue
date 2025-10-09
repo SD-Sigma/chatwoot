@@ -77,11 +77,12 @@ const store = useStore();
 const currentChat = useMapGetter('getSelectedChat');
 const currentUser = useMapGetter('getCurrentUser'); 
 const conversationId = computed(() => props.conversationId);
+const isAdmin = computed(() => currentUser.value?.role === 'administrator');
 
 
 const canShowAccordions = computed(() => {
   return (
-    currentUser.value?.role === 'administrator' ||
+    isAdmin ||
     (
       currentUser.value?.id === currentChat.value?.meta?.assignee?.id &&
       currentChat.value?.status !== 'resolved'
@@ -181,7 +182,7 @@ onMounted(() => {
             </AccordionItem>
           </div>
           <div
-            v-else-if="element.name === 'conversation_participants' && canShowAccordions"
+            v-else-if="element.name === 'conversation_participants' && isAdmin"
             class="conversation--actions"
           >
             <AccordionItem
@@ -213,7 +214,7 @@ onMounted(() => {
               />
             </AccordionItem>
           </div>
-          <div v-else-if="element.name === 'contact_attributes' && canShowAccordions">
+          <div v-else-if="element.name === 'contact_attributes' && isAdmin">
             <AccordionItem
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONTACT_ATTRIBUTES')"
               :is-open="isContactSidebarItemOpen('is_contact_attributes_open')"
@@ -251,7 +252,7 @@ onMounted(() => {
               />
             </AccordionItem>
           </div>
-          <woot-feature-toggle
+          <!-- <woot-feature-toggle
             v-else-if="element.name === 'macros' && canShowAccordions"
             feature-key="macros"
           >
@@ -263,8 +264,8 @@ onMounted(() => {
             >
               <MacrosList :conversation-id="conversationId" />
             </AccordionItem>
-          </woot-feature-toggle>
-          <div
+          </woot-feature-toggle> -->
+          <!-- <div
             v-else-if="
               element.name === 'linear_issues' && isLinearFeatureEnabled && canShowAccordions
             "
@@ -280,7 +281,7 @@ onMounted(() => {
               <LinearSetupCTA v-if="!isLinearIntegrationEnabled" />
               <LinearIssuesList v-else :conversation-id="conversationId" />
             </AccordionItem>
-          </div>
+          </div> -->
           <div
             v-else-if="
               element.name === 'shopify_orders' && isShopifyFeatureEnabled && canShowAccordions
@@ -297,7 +298,7 @@ onMounted(() => {
               <ShopifyOrdersList :contact-id="contactId" />
             </AccordionItem>
           </div>
-          <div v-else-if="element.name === 'contact_notes' && canShowAccordions">
+          <!-- <div v-else-if="element.name === 'contact_notes' && canShowAccordions">
             <AccordionItem
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONTACT_NOTES')"
               :is-open="isContactSidebarItemOpen('is_contact_notes_open')"
@@ -308,7 +309,7 @@ onMounted(() => {
             >
               <ContactNotes :contact-id="contactId" />
             </AccordionItem>
-          </div>
+          </div> -->
         </template>
       </Draggable>
     </div>
