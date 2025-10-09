@@ -8,6 +8,13 @@ import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents';
 
 const { updateUISettings } = useUISettings();
 
+// Detección de tema (usando color-scheme)
+const theme = computed(() => {
+  const html = document.documentElement;
+  const scheme = html.style.colorScheme || html.getAttribute('style') || '';
+  return scheme.includes('dark') ? 'dark' : 'light';
+});
+
 const currentAccountId = useMapGetter('getCurrentAccountId');
 const isFeatureEnabledonAccount = useMapGetter(
   'accounts/isFeatureEnabledonAccount'
@@ -25,6 +32,32 @@ const isCopilotPanelOpen = computed(
   () => uiSettings.value.is_copilot_panel_open
 );
 
+
+// 🎨 Variable con colores según tema y estado
+const contactButtonStyle = computed(() => {
+  const isLight = theme.value === 'light';
+  const opened = isContactSidebarOpen.value;
+
+  let baseColor, hoverColor, shadowColor;
+
+  if (isLight) {
+    baseColor = '#466525';
+    hoverColor = '#627829';
+    shadowColor = '#b6751a55';
+  } else {
+    baseColor = '#499643';
+    hoverColor = '#1f6b90';
+    shadowColor = '#26579955';
+  }
+
+  return {
+    backgroundColor: opened ? baseColor : 'transparent',
+    color: opened ? 'white' : baseColor,
+    border: `1px solid ${baseColor}`,
+    boxShadow: opened ? `0 0 6px ${shadowColor}` : 'none',
+    transition: 'all 0.25s ease-in-out',
+  };
+});
 const toggleConversationSidebarToggle = () => {
   updateUISettings({
     is_contact_sidebar_open: !isContactSidebarOpen.value,
@@ -63,10 +96,8 @@ useKeyboardEvents(keyboardEvents);
       ghost
       slate
       sm
+      :style="contactButtonStyle"
       class="!rounded-full"
-      :class="{
-        'bg-n-alpha-2': isContactSidebarOpen,
-      }"
       icon="i-ph-user-bold"
       @click="handleConversationSidebarToggle"
     />
@@ -75,7 +106,7 @@ useKeyboardEvents(keyboardEvents);
       v-tooltip.bottom="$t('CONVERSATION.SIDEBAR.COPILOT')"
       ghost
       slate
-      class="!rounded-full"
+      class="!rounded-full text-[#265799] hover:bg-[#265799] hover:text-white transition-all"
       :class="{
         'bg-n-alpha-2 !text-n-iris-9': isCopilotPanelOpen,
       }"
