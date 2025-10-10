@@ -36,7 +36,7 @@ class AccountUser < ApplicationRecord
 
   accepts_nested_attributes_for :account
 
-  after_create_commit :notify_creation, :create_notification_setting,:set_default_ui_settings
+  after_create_commit :notify_creation, :create_notification_setting
   after_destroy :notify_deletion, :remove_user_from_account
   after_save :update_presence_in_redis, if: :saved_change_to_availability?
 
@@ -71,25 +71,6 @@ class AccountUser < ApplicationRecord
 
     setting.save!
   end
-
-  def set_default_ui_settings
-    self.ui_settings ||= {}
-    self.ui_settings[account.id] ||= {
-      audio_alerts: {
-        assigned_conversation: true,
-        unassigned_conversation: true,
-        assigned_to_others: true,
-        all_conversations: true
-      },
-      conditions: {
-        window_inactive: true,
-        repeat_every_30s: true
-      },
-      is_contact_sidebar_open: true
-    }
-    save!
-  end
-
 
 
   def remove_user_from_account
