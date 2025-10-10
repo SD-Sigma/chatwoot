@@ -166,9 +166,12 @@ class User < ApplicationRecord
   def set_default_ui_settings
     if ui_settings.blank?
       self.ui_settings = {
-        "enable_audio_alerts" => "assigned", #assigned+notme+unassigned #→ Habilita las alertas de audio para conversaciones asignadas (según el valor "assigned").
-        "always_play_audio_alert" => true,   #→ Indica que el sonido debe reproducirse siempre que se cumpla la condición, sin importar el estado previo.
-        "alert_if_unread_assigned_conversation_exist" => true  # → Hace que se generen alertas si existen conversaciones asignadas sin leer.
+        "notification_tone" => "bell",                   # tono de notificación por defecto
+        "enable_audio_alerts" => "assigned",             # assigned+notme+unassigned habilita alertas solo para conversaciones asignadas
+        "show_secondary_sidebar" => false,               # sidebar secundario cerrado por defecto
+        "always_play_audio_alert" => true,               # siempre reproducir sonido
+        "conversation_display_type" => "expanded",       # vista de conversaciones expandida
+        "alert_if_unread_assigned_conversation_exist" => true # alerta si hay conversaciones asignadas sin leer
       }
     end
   end

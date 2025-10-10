@@ -60,7 +60,7 @@ class AccountUser < ApplicationRecord
     #  :push_conversation_creation,
       :push_conversation_mention,
       :push_assigned_conversation_new_message,
-      :push_participating_conversation_new_message
+    #  :push_participating_conversation_new_message
     ]
 
     # Otros flags disponibles (comentados):
