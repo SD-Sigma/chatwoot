@@ -7,7 +7,7 @@ const activeConversations = {};
 const COOLDOWN_MS = 60 * 1000; // 1 minuto
 
 // 🔧 VARIABLES BOOLEANAS DE CONTROL
-const ENABLE_PUSH_CONTROL = false; // Cambia a false para desactivar el control por intervalo
+const ENABLE_PUSH_CONTROL = true; // Cambia a false para desactivar el control por intervalo
 const ENABLE_LOGS = false; // Cambia a false para desactivar los logs
 
 // 🔧 Función de logging condicional
