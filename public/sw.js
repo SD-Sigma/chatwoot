@@ -57,7 +57,7 @@ self.addEventListener('push', event => {
     log('No se detectó conversationId, mostrando notificación normal.', '⚠️');
     event.waitUntil(
       self.registration.showNotification(title || 'Nuevo mensaje', {
-        tag,
+        tag:"bussiness",
         data: { url },
       })
     );
@@ -85,7 +85,7 @@ self.addEventListener('push', event => {
     // ✅ Mostramos notificación de asignación
     event.waitUntil(
       self.registration.showNotification(title || 'Nueva asignación', {
-        tag,
+        tag:"bussiness",
         data: { url },
       })
     );
@@ -105,7 +105,7 @@ self.addEventListener('push', event => {
 
     event.waitUntil(
       self.registration.showNotification(title || 'Nuevo mensaje', {
-        tag,
+        tag:"bussiness",
         data: { url },
       })
     );
@@ -118,7 +118,7 @@ self.addEventListener('push', event => {
     
     event.waitUntil(
       self.registration.showNotification(title || 'Nuevo mensaje', {
-        tag,
+        tag:"bussiness",
         data: { url },
       })
     );
@@ -129,7 +129,7 @@ self.addEventListener('push', event => {
   log('Tipo de notificación no controlado, se muestra normal.', 'ℹ️');
   event.waitUntil(
     self.registration.showNotification(title || 'Notificación', {
-      tag,
+      tag:"bussiness",
       data: { url },
     })
   );
