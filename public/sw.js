@@ -57,8 +57,9 @@ self.addEventListener('push', event => {
     log('No se detectó conversationId, mostrando notificación normal.', '⚠️');
     event.waitUntil(
       self.registration.showNotification(title || 'Nuevo mensaje', {
-        tag:"bussiness",
+        tag:`bussiness ${Date.now()}`,
         data: { url },
+        renotify: true 
       })
     );
     return;
@@ -84,9 +85,10 @@ self.addEventListener('push', event => {
 
     // ✅ Mostramos notificación de asignación
     event.waitUntil(
-      self.registration.showNotification(title || 'Nueva asignación', {
-        tag:"bussiness",
+      self.registration.showNotification(title || `Nueva asignación ${Date.now()}`, {
+        tag:`bussiness ${Date.now()}`,
         data: { url },
+        renotify: true 
       })
     );
     return;
@@ -104,9 +106,10 @@ self.addEventListener('push', event => {
     log(`Mostrando nuevo mensaje de conversación #${conversationId} (pasaron ${diff}ms)`, '✅');
 
     event.waitUntil(
-      self.registration.showNotification(title || 'Nuevo mensaje', {
-        tag:"bussiness",
+      self.registration.showNotification(title || `Nuevo mensaje ${Date.now()}`, {
+        tag:`bussiness ${Date.now()}`,
         data: { url },
+        renotify: true 
       })
     );
     return;
@@ -117,9 +120,10 @@ self.addEventListener('push', event => {
     log(`Control desactivado - Mostrando todos los mensajes de conversación #${conversationId}`, '🔓');
     
     event.waitUntil(
-      self.registration.showNotification(title || 'Nuevo mensaje', {
-        tag:"bussiness",
+      self.registration.showNotification(title || `Nuevo mensaje ${Date.now()}`, {
+        tag:`bussiness ${Date.now()}`,
         data: { url },
+        renotify: true 
       })
     );
     return;
@@ -128,9 +132,10 @@ self.addEventListener('push', event => {
   // 🧩 5. Si es otro tipo, mostrar normalmente
   log('Tipo de notificación no controlado, se muestra normal.', 'ℹ️');
   event.waitUntil(
-    self.registration.showNotification(title || 'Notificación', {
-      tag:"bussiness",
+    self.registration.showNotification(title || `Notificación ${Date.now()}`, {
+      tag:`bussiness ${Date.now()}`,
       data: { url },
+      renotify: true 
     })
   );
 });

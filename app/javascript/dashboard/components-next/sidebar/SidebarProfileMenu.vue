@@ -1,11 +1,12 @@
 <script setup>
 import { computed } from 'vue';
 import Auth from 'dashboard/api/auth';
-import { useMapGetter } from 'dashboard/composables/store';
+import { useMapGetter,useStore} from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import Avatar from 'next/avatar/Avatar.vue';
 import SidebarProfileMenuStatus from './SidebarProfileMenuStatus.vue';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
+
 
 import {
   DropdownContainer,
@@ -22,6 +23,7 @@ defineOptions({
 });
 
 const { t } = useI18n();
+const store = useStore();
 
 const currentUser = useMapGetter('getCurrentUser');
 const currentUserAvailability = useMapGetter('getCurrentUserAvailability');
@@ -86,7 +88,7 @@ const menuItems = computed(() => {
       nativeLink: true,
       target: '_blank',
     },
-    {
+    /*{
       show: true,
       showOnCustomBrandedInstance: false,
       label: t('SIDEBAR_ITEMS.CHANGELOG'),
@@ -94,7 +96,7 @@ const menuItems = computed(() => {
       link: 'https://www.chatwoot.com/changelog/',
       nativeLink: true,
       target: '_blank',
-    },
+    },*/
     {
       show: currentUser.value.type === 'SuperAdmin',
       showOnCustomBrandedInstance: true,
@@ -109,8 +111,17 @@ const menuItems = computed(() => {
       showOnCustomBrandedInstance: true,
       label: t('SIDEBAR_ITEMS.LOGOUT'),
       icon: 'i-lucide-power',
-      click: Auth.logout,
-    },
+      click: async () => {
+
+        store.dispatch('updateAvailability', {
+          availability : 'offline',
+          account_id: accountId.value,
+        });
+
+        console.log('Ejecutando logout...');
+        Auth.logout();
+      },
+    }
   ];
 });
 
