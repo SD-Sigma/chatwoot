@@ -1,0 +1,4 @@
+
+# Scripts de arranque de contenedores deben usar LF siempre (Docker/Linux)
+docker/entrypoints/** text eol=lf
+*.sh text eol=lf

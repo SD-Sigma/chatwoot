@@ -1,0 +1,41 @@
+# Despliegue automatico en el servidor de produccion.
+# Requiere un "self-hosted runner" de GitHub Actions instalado en el servidor
+# (ver DESPLIEGUE.md, seccion 4). Al hacer push a la rama de produccion,
+# este runner recompila la imagen (backend + frontend), aplica migraciones
+# de BD y reinicia los contenedores.
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - master-sigma   # <-- cambia por la rama que uses para produccion
+
+# Evita despliegues solapados si llegan varios push seguidos
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, chatwoot-prod]   # etiquetas del runner del servidor
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Sincronizar codigo en el directorio de despliegue
+        run: |
+          set -e
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude 'storage' \
+            ./ /opt/chatwoot/
+
+      - name: Build (backend + frontend) y migraciones + arranque
+        working-directory: /opt/chatwoot
+        run: |
+          set -e
+          docker compose -f docker-compose.prod.build.yaml build
+          docker compose -f docker-compose.prod.build.yaml run --rm rails bundle exec rails db:chatwoot_prepare
+          docker compose -f docker-compose.prod.build.yaml up -d
+          docker image prune -f

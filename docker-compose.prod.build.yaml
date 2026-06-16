@@ -1,0 +1,72 @@
+# Compose de PRODUCCION que COMPILA tu propio codigo (tu fork), en lugar de
+# descargar la imagen publica chatwoot/chatwoot:latest.
+# El Dockerfile precompila los assets del frontend (RAILS_ENV=production).
+#
+# Uso en el servidor:
+#   docker compose -f docker-compose.prod.build.yaml build
+#   docker compose -f docker-compose.prod.build.yaml run --rm rails bundle exec rails db:chatwoot_prepare
+#   docker compose -f docker-compose.prod.build.yaml up -d
+
+services:
+  base: &base
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      args:
+        RAILS_ENV: production
+        RAILS_SERVE_STATIC_FILES: 'true'
+    image: chatwoot-sigma:production
+    env_file: .env
+    volumes:
+      - storage_data:/app/storage
+
+  rails:
+    <<: *base
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - '127.0.0.1:3000:3000'
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+    entrypoint: docker/entrypoints/rails.sh
+    command: ['bundle', 'exec', 'rails', 's', '-p', '3000', '-b', '0.0.0.0']
+    restart: always
+
+  sidekiq:
+    <<: *base
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+    restart: always
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=chatwoot_production
+      - POSTGRES_USER=postgres
+      # Debe coincidir con POSTGRES_PASSWORD del archivo .env
+      - POSTGRES_PASSWORD=CAMBIA_ESTA_PASSWORD_PG
+
+  redis:
+    image: redis:alpine
+    restart: always
+    command: ["sh", "-c", "redis-server --requirepass \"$REDIS_PASSWORD\""]
+    env_file: .env
+    volumes:
+      - redis_data:/data
+
+volumes:
+  storage_data:
+  postgres_data:
+  redis_data:

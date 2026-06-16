@@ -1,0 +1,8 @@
+# Override local para desarrollo (NO commitear si no quieres).
+# Ajusta la contraseña de Postgres para que coincida con POSTGRES_PASSWORD del .env.
+services:
+  postgres:
+    environment:
+      - POSTGRES_DB=chatwoot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

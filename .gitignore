@@ -27,6 +27,9 @@ node_modules
 master.key
 *.rdb
 
+# pnpm store / cache (no debe subirse al repo)
+.pnpm-store/
+
 # Ignore env files
 .env
 
