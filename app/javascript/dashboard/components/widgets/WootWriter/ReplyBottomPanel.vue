@@ -283,7 +283,7 @@ export default {
         @click="toggleEmojiPicker"
       />
       <FileUpload
-        v-if="isAdmin && showAttachButton"
+        v-if="showAttachButton"
         ref="uploadRef"
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_ATTACH_ICON')"
         input-id="conversationAttachment"
@@ -308,7 +308,7 @@ export default {
       </FileUpload>
 
       <NextButton
-        v-if="isAdmin && showAudioRecorderButton"
+        v-if="showAudioRecorderButton"
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_AUDIORECORDER_ICON')"
         :icon="!isRecordingAudio ? 'i-ph-microphone' : 'i-ph-microphone-slash'"
         slate
